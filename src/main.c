@@ -3,20 +3,27 @@
 
 
 
+#define SCENE_WIDTH 100
+#define SCENE_HEIGHT 20
+#define FRAME_COUNT 150
+#define FRAME_DELAY_MS 100
+
+
+
 /* Function Definitions*/
 
 
-void clear_screen() {
+void clear_screen(void) {
     printf("\x1B[2J"); // clears screen
     printf("\x1B[H"); // moves cursor to top-left
     fflush(stdout);
 }
 
-void hide_cursor() {
+void hide_cursor(void) {
     printf("\x1B[?25l");
 }
 
-void show_cursor() {
+void show_cursor(void) {
     printf("\x1B[?25h");
 }
 
@@ -32,18 +39,24 @@ void sleep_ms(long ms) {
 void draw_frame(int frame) {
     printf("cweather\t");
     printf("Frame: %d\n", frame);
-    printf("Made by russkiyximik\n");
-
-    for ( int i = 0; i < 10; i++ ) {
-        for ( int j = 0; j < 10; j++ ) {
-            putchar(' '); // adds a col
-            if ( (i+j+frame) % 5 == 0 ) {
+    printf("Condition: rain\n");
+    
+    for ( int i = 0; i < SCENE_HEIGHT; i++ ) {
+        for ( int j = 0; j < SCENE_WIDTH; j++ ) {
+            if ( (i * 3 + j + frame) % 17 == 0 ) {
                 putchar('/');
             }
+            else putchar(' ');
         }
         putchar('\n'); // adds a row
     }
-    printf("Done!\n");
+    for ( int j = 0; j < SCENE_WIDTH; j++ ) {
+        // print a simple ground
+        putchar('^');
+    }
+
+    putchar('\n');
+    printf("Made by russkiyximik");
 }
 
 /*
@@ -57,10 +70,11 @@ int main(void) {
     clear_screen();
     hide_cursor();
 
-    for ( int frame = 0; frame < 10; frame++ ) {
-        draw_frame(frame);
-        sleep_ms(500);
+    for ( int frame = 0; frame < 100; frame++ ) {
         clear_screen();
+        draw_frame(frame);
+        fflush(stdout);
+        sleep_ms(100);
     }
 
     show_cursor();
