@@ -58,26 +58,3 @@ void draw_frame(int frame) {
     putchar('\n');
     printf("Made by russkiyximik");
 }
-
-/*
-todo
-
-draw_frame (exceedingly simple)
-*/
-
-
-int main(void) {
-    clear_screen();
-    hide_cursor();
-
-    for ( int frame = 0; frame < FRAME_COUNT; frame++ ) {
-        clear_screen();
-        draw_frame(frame);
-        fflush(stdout);
-        sleep_ms(FRAME_DELAY_MS);
-    }
-
-    show_cursor();
-
-    return 0;
-}
