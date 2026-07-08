@@ -1,12 +1,7 @@
+#include <terminal.h>
 #include <stdio.h>
 #include <time.h>
 
-
-
-#define SCENE_WIDTH 100
-#define SCENE_HEIGHT 20
-#define FRAME_COUNT 150
-#define FRAME_DELAY_MS 100
 
 
 
@@ -58,3 +53,15 @@ void draw_frame(int frame) {
     putchar('\n');
     printf("Made by russkiyximik");
 }
+
+
+
+/* Fake Weather (temporary obv) */
+
+
+WeatherData weather = {
+    .condition=WEATHER_RAINY,
+    .temp=18.,
+    .wind_speed=12.,
+    .precipitation=.8
+};
