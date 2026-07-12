@@ -1,0 +1,8 @@
+/*
+Contains background objects
+
+i.e.
+House
+Sun
+Ground
+*/

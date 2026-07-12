@@ -1,41 +1,43 @@
+/*
+Communicates with the OS/terminal
+
+Query terminal dimensions
+Enter raw input mode (TBD)
+Manipulate cursor using ANSI
+Write completed frame to stdout
+Restore settings on exit (TBD)
+*/
+
 #ifndef TERMINAL_H
 #define TERMINAL_H
 
-
-#define SCENE_WIDTH 100
-#define SCENE_HEIGHT 20
-#define FRAME_COUNT 150
-#define FRAME_DELAY_MS 100
+#include <termios.h>
+#include <stddef.h>
 
 
-// basic terminal utils
+
+// basic utils
 void clear_screen(void);
 void hide_cursor(void);
 void show_cursor(void);
 void sleep_ms(long ms);
 
 
-// stuff related to weather
-typedef enum {
-    WEATHER_CLEAR,
-    WEATHER_CLOUDY,
-    WEATHER_RAINY,
-    WEATHER_SNOWY,
-    WEATHER_STORM
-} WeatherCondition;
 
+// Data
 typedef struct {
-    WeatherCondition condition;
-    double temp; // in C
-    double wind_speed;
-    double precipitation;
-} WeatherData;
+    int width;
+    int height;
+    struct termios original_settings;
+    int initialized;
+} Terminal;
 
 
 
-void draw_background(); // draws house and such
-
-void draw_frame(WeatherCondition condition, int frame);
-
+// Terminal "member functions"
+int terminal_init(Terminal* terminal);
+void terminal_restore(Terminal* terminal);
+int terminal_update_size(Terminal* terminal);
+int terminal_present(const char* buff, size_t length);
 
 #endif
