@@ -15,29 +15,6 @@
 /* Function Definitions*/
 
 
-void clear_screen(void) {
-    printf("\x1B[2J"); // clears screen
-    printf("\x1B[H"); // moves cursor to top-left
-    fflush(stdout);
-}
-
-void hide_cursor(void) {
-    printf("\x1B[?25l");
-}
-
-void show_cursor(void) {
-    printf("\x1B[?25h");
-}
-
-void sleep_ms(long ms) {
-    // puts calling thread to sleep for ms
-    struct timespec sleep_time;
-    sleep_time.tv_sec = ms / 1000;
-    sleep_time.tv_nsec = (ms % 1000) * (long)(1e6);
-    
-    (void)nanosleep(&sleep_time, NULL);
-}
-
 void draw_frame(WeatherCondition Weather, int frame) {
     printf("cweather\t");
     printf("Frame: %d\n", frame);
