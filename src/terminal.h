@@ -21,7 +21,6 @@ void clear_screen(void);
 void hide_cursor(void);
 void show_cursor(void);
 void sleep_ms(long ms);
-static int write_all(int fd, const char* buff, size_t length);
 
 
 

@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <time.h>
+#include <errno.h>
 
 
 
@@ -24,6 +25,7 @@ void show_cursor(void) {
 
 void sleep_ms(long ms) {
     // puts calling thread to sleep for ms
+    // in C++, use std::chrono::steady_clock
     struct timespec sleep_time;
     sleep_time.tv_sec = ms / 1000;
     sleep_time.tv_nsec = (ms % 1000) * (long)(1e6);
@@ -32,7 +34,23 @@ void sleep_ms(long ms) {
 }
 
 static int write_all(int fd, const char* buff, size_t length) {
-    // todo: implement
+    // calls write() until every byte of buff is written
+    // prevents partial writes due to ...(idk)
+    size_t total = 0;
+
+    while (total < length) {
+        // points to beginning of what to write
+        ssize_t written = write(fd, buff + total, length - total);
+        
+        if (written == -1) {
+            if (errno == EINTR) continue; // interrupted by a signal
+            return -1;
+        }
+
+        total +=(size_t) written;
+    }
+
+    return 0;
 }
 
 
@@ -60,12 +78,14 @@ int terminal_update_size(Terminal* terminal) {
 
 
 int terminal_present(const char* buff, size_t length) {
-    // What is this meant to do?
+    // Writes a buffer.
+    // Displays one frame produced by the renderer
 
-    if ( write(STDOUT_FILENO, "\x1b[H", 3) == -1 ) {
+    // overwrites old frame directly instead of clearing screen
+    if ( write_all(STDOUT_FILENO, "\x1b[H", 3) == -1 ) {
         return -1;
     }
-    if ( write(STDOUT_FILENO, buff, length) == -1 ) {
+    if ( write_all(STDOUT_FILENO, buff, length) == -1 ) {
         return -1;
     }
 
@@ -93,6 +113,6 @@ int terminal_init(Terminal* terminal) {
 void terminal_restore(Terminal* terminal) {
     // cleanup
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminal->original_settings);
-    hide_cursor();
+    show_cursor();
     clear_screen();
 }
