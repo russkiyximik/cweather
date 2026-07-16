@@ -7,6 +7,7 @@ Draws characters, e.g. from backg.h
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#include <stddef.h>
 
 
 // Data
@@ -26,8 +27,28 @@ typedef struct {
 } WeatherData;
 
 
+// Core objects
+typedef struct {
+    int width;
+    int height;
+    size_t stride; // bytes between rows
+    size_t length;
+    char* buffer;
+} Renderer;
 
-// Random stuff
+
+// Core functionality
+int renderer_init(Renderer* renderer, int term_w, int term_h);
+void renderer_destroy(Renderer* renderer);
+
+void renderer_clear(Renderer* renderer);
+int renderer_write(Renderer* renderer, int x, int y, char symbol);
+
+const char* renderer_buffer(const Renderer* renderer);
+const size_t renderer_length(const Renderer* renderer);
+
+
+// Random stuff (tbd whether needed or not)
 void draw_background(); // draws house and such
 
 void draw_frame(WeatherCondition condition, int frame);

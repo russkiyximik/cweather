@@ -3,16 +3,35 @@
 #include <time.h>
 
 
+/*
+todo
 
-// Todo: definitely clean this up
-// i.e. reimplement this whole file
-#define SCENE_WIDTH 100
-#define SCENE_HEIGHT 20
-#define FRAME_COUNT 150
-#define FRAME_DELAY_MS 100
+renderer_clear
+renderer_destroy
+renderer_write
+renderer_buffer
+renderer_length
+*/
 
 
 /* Function Definitions*/
+
+
+int renderer_init(Renderer* renderer, int term_w, int term_h) {
+    if (!renderer || term_h<1 || term_w<1) return -1;
+
+    renderer->width = term_w - 1; // leave room for '\n'
+    renderer->height = term_h - 1;
+    renderer->stride = term_w;
+    renderer->length = renderer->stride * (size_t)renderer->height - 1;
+    // byte for (x, y) is renderer->stride * y + x
+
+    renderer->buffer = malloc(renderer->length);
+    if (!renderer->buffer) return -1;
+
+    renderer_clear(renderer);
+    return 0;
+}
 
 
 void draw_frame(WeatherCondition Weather, int frame) {
@@ -37,15 +56,3 @@ void draw_frame(WeatherCondition Weather, int frame) {
     putchar('\n');
     printf("Made by russkiyximik");
 }
-
-
-
-/* Fake Weather (temporary obv) */
-
-
-WeatherData weather = {
-    .condition=WEATHER_RAINY,
-    .temp=18.,
-    .wind_speed=12.,
-    .precipitation=.8
-};

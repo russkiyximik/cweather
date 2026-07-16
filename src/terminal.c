@@ -9,6 +9,7 @@
 
 
 // Terminal Utils
+
 void clear_screen(void) {
     printf("\x1B[2J"); // clears screen
     printf("\x1B[H"); // moves cursor to top-left
@@ -56,12 +57,8 @@ static int write_all(int fd, const char* buff, size_t length) {
 
 
 
-/*
-todo
-write_all
-*/
-
 // Terminal Native Stuff
+
 int terminal_update_size(Terminal* terminal) {
     struct winsize size;
 
@@ -96,23 +93,28 @@ int terminal_present(const char* buff, size_t length) {
 int terminal_init(Terminal* terminal) {
     // Initializes Terminal obj with proper settings
     // i.e., turning off canon input type and echoing characters
+    terminal->initialized = 0;
 
-    int temp = tcgetattr(STDIN_FILENO, &terminal->original_settings);
+    if (tcgetattr(STDIN_FILENO, &terminal->original_settings)==-1) return -1;
     struct termios raw = terminal->original_settings;
     raw.c_lflag &= ~(ICANON | ECHO); // disables ICANON + ECHO bit flags
 
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw); // what is TCSAFLUSH?
 
+    terminal->initialized = 1;
     hide_cursor();
     clear_screen();
 
-    return 0;
+    return terminal_update_size(terminal);
 }
 
 
 void terminal_restore(Terminal* terminal) {
     // cleanup
+    if (!terminal->initialized) return;
+
     tcsetattr(STDIN_FILENO, TCSAFLUSH, &terminal->original_settings);
     show_cursor();
     clear_screen();
+    terminal->initialized = 0;
 }
