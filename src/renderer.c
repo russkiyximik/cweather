@@ -3,26 +3,16 @@
 #include <time.h>
 
 
-/*
-todo
-
-renderer_clear
-renderer_destroy
-renderer_write
-renderer_buffer
-renderer_length
-*/
-
 
 /* Function Definitions*/
 
 int renderer_init(Renderer* renderer, int term_w, int term_h) {
     if (!renderer || term_h<1 || term_w<1) return -1;
 
-    renderer->width = term_w - 1; // leave room for '\n'
+    renderer->width = term_w; // leave room for '\n'
     renderer->height = term_h - 1;
-    renderer->stride = term_w;
-    renderer->length = renderer->stride * (size_t)renderer->height - 1;
+    renderer->stride = term_w + 1;
+    renderer->length = renderer->stride * (size_t)renderer->height;
     // byte for (x, y) is renderer->stride * y + x
 
     renderer->buffer = malloc(renderer->length);
@@ -33,7 +23,8 @@ int renderer_init(Renderer* renderer, int term_w, int term_h) {
 }
 
 void renderer_destroy(Renderer* renderer) {
-    free(renderer); // ?
+    free(renderer->buffer); // ?
+    renderer->buffer = NULL;
 }
 
 
@@ -42,15 +33,17 @@ void renderer_clear(Renderer* renderer) {
         // offset is row * renderer->stride
         // leave spaces for \n
         memset(renderer->buffer + renderer->stride * row, 
-            0, renderer->width); // should i set it to blank space ' ' instead?
+            ' ', renderer->width);
+        renderer->buffer[renderer->stride * row + renderer->width] = '\n';
     }
 }
 
 int renderer_write(Renderer* renderer, int x, int y, char symbol) {
     // ensure (x, y) within bounds
-    if (y > renderer->height || x > renderer->width) return -1;
+    if (!renderer || y >= renderer->height || x >= renderer->width
+        || x < 0 || y < 0) return -1;
 
-    memset(renderer->buffer + renderer->stride * y + x, symbol, 1);
+    renderer->buffer[renderer->stride * y + x] = symbol;
     return 0;
 }
 

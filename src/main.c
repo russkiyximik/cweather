@@ -1,4 +1,5 @@
 #include <terminal.h>
+#include <renderer.h>
 #include <weather.h>
 #include <stdio.h>
 
@@ -12,17 +13,28 @@
 
 
 int main(void) {
-    clear_screen();
-    hide_cursor();
+    Terminal terminal;
+    Renderer renderer;
 
-    for ( int frame = 0; frame < FRAME_COUNT; frame++ ) {
-        clear_screen();
-        // draw_frame(condition, frame);
-        fflush(stdout);
-        sleep_ms(FRAME_DELAY_MS);
+    terminal_init(&terminal);
+    renderer_init(&renderer, terminal.width, terminal.height);
+
+    for ( int frame = 0; frame < 200; frame++ ) {
+        renderer_clear(&renderer);
+
+        renderer_write(&renderer,
+            frame % renderer.width,
+            renderer.height / 2,
+            '@'
+        );
+
+        terminal_present(renderer_buffer(&renderer), renderer_length(&renderer));
+    
+        sleep_ms(50);
     }
 
-    show_cursor();
+    renderer_destroy(&renderer);
+    terminal_restore(&terminal);
 
     return 0;
 }

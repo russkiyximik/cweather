@@ -44,6 +44,7 @@ void renderer_destroy(Renderer* renderer);
 void renderer_clear(Renderer* renderer);
 int renderer_write(Renderer* renderer, int x, int y, char symbol);
 
+// just getter functions lol. Encapsulation! Good software design!
 const char* renderer_buffer(const Renderer* renderer);
 const size_t renderer_length(const Renderer* renderer);
 
